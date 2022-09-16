@@ -1,0 +1,36 @@
+plugins {
+	id 'org.springframework.boot' version "$springBootVersion"
+	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+	id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+
+bootBuildImage {
+	imageName = "docker.io/psinhadocker/source-build:${project.version}"
+	bindings = ["${projectDir}/bindings:/platform/bindings"]
+	environment = ["BP_JVM_VERSION": "17"]
+	buildpacks = [
+			'paketo-buildpacks/ca-certificates',
+			'paketo-buildpacks/bellsoft-liberica',
+			'paketo-buildpacks/syft',
+			'paketo-buildpacks/gradle',
+			'paketo-buildpacks/dist-zip',
+			'paketo-buildpacks/spring-boot',
+	]
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
